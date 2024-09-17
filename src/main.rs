@@ -62,8 +62,19 @@ impl Ball {
         in_range!((p.position as usize, p.position as usize + PADDLE_LENGTH), clamped_ball_pos) && paddle_x == clamped_ball_pos
     }
 
-    fn calc_next_ball_pos(self: &mut Ball, delta_time_sec: f32) {
+    fn calc_ball_physics_cycle(self: &mut Ball, delta_time_sec: f32) {
+        self.x += self.x_speed * delta_time_sec;
+        self.y += self.y_speed * delta_time_sec;
         
+        if !in_range!((0, WIDTH - 1), self.x as usize) {
+            self.x = clamp!((0.0, (WIDTH - 1) as f32), self.x);
+            self.x_speed *= -1.0;
+        }
+
+        if !in_range!((0, HEIGHT - 1), self.y as usize) {
+            self.y = clamp!((0.0, (HEIGHT - 1) as f32), self.y);
+            self.y_speed *= -1.0;
+        }
     }
 }
 
