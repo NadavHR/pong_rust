@@ -28,9 +28,10 @@ macro_rules! clamp {
     };
 }
 
-const WIDTH: usize = 800;
-const HEIGHT: usize = 600;
-const PADDLE_LENGTH: usize = 100;
+const WIDTH: u32 = 800;
+const HEIGHT: u32 = 600;
+const PADDLE_LENGTH: u32 = 100;
+
 struct Ball {
     x: f32,
     y: f32,
@@ -52,32 +53,41 @@ enum Player {
 
 impl Ball {
     fn touching_player(self: &Ball, player: &Player) -> bool {
-        let paddle_x: usize;
+        let paddle_x: u32;
         let p: &PlayerStruct = match player {
             Player::P1(p) => {paddle_x = 0; &p},
             Player::P2(p) => {paddle_x = WIDTH - 1; &p}
         };
-        let clamped_ball_pos: usize = clamp!((0, (WIDTH - 1) as usize), self.x as usize);
+        let clamped_ball_pos: u32 = clamp!((0, (WIDTH - 1) as u32), self.x as u32);
 
-        in_range!((p.position as usize, p.position as usize + PADDLE_LENGTH), clamped_ball_pos) && paddle_x == clamped_ball_pos
+        in_range!((p.position as u32, p.position as u32 + PADDLE_LENGTH), clamped_ball_pos) && paddle_x == clamped_ball_pos
     }
 
     fn calc_ball_physics_cycle(self: &mut Ball, delta_time_sec: f32) {
         self.x += self.x_speed * delta_time_sec;
         self.y += self.y_speed * delta_time_sec;
         
-        if !in_range!((0, WIDTH - 1), self.x as usize) {
+        if !in_range!((0, WIDTH - 1), self.x as u32) {
             self.x = clamp!((0.0, (WIDTH - 1) as f32), self.x);
             self.x_speed *= -1.0;
         }
 
-        if !in_range!((0, HEIGHT - 1), self.y as usize) {
+        if !in_range!((0, HEIGHT - 1), self.y as u32) {
             self.y = clamp!((0.0, (HEIGHT - 1) as f32), self.y);
             self.y_speed *= -1.0;
         }
     }
 }
 
+
+extern "C" {
+    pub fn test();
+}
+
 fn main() {
-    println!("Hello, world!");
+    unsafe {
+        test();
+    }
+    let p1 = Player::P1(PlayerStruct{position: 0f32, speed: 0f32, score: 0});
+    let p2 = Player::P2(PlayerStruct{position: 0f32, speed: 0f32, score: 0});
 }
