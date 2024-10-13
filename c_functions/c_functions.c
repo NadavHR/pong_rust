@@ -77,6 +77,10 @@ void finish_game() {
     SDL_Quit();
 }
 
+void set_title(char * title) {
+    SDL_SetWindowTitle(win, title);
+}
+
 void update_SDL(){
     if (SDL_PollEvent(&window_event))
     {

@@ -1,3 +1,5 @@
+use std::ffi::{CStr, CString};
+
 macro_rules! max {
     ( $a:expr, $b:expr ) => {
         (if $a > $b { $a } else {$b})
@@ -135,6 +137,7 @@ extern "C" {
     fn draw(ball_x: f32, ball_y: f32, p1_height: f32, p2_height: f32);
     fn update_SDL();
     fn finish_game();
+    fn set_title(title: *const u8);
     static mut p1_up: bool;
     static mut p1_down: bool;
     static mut p2_up: bool;
@@ -167,6 +170,8 @@ fn main() {
         start_time_milis = cur_time_milis;
         let p1_height: f32;
         let p2_height: f32;
+        let p1_score: u8;
+        let p2_score: u8;
 
         match p1 {
             Player::P1(ref mut p) => {
@@ -177,6 +182,7 @@ fn main() {
                     p.handle_input(p1_up, p1_down, delta_time_seconds);
                 }
                 p1_height = p.position;
+                p1_score = p.score;
             },
             _ => {panic!("p1 was dropped!")}
         };
@@ -189,6 +195,7 @@ fn main() {
                     p.handle_input(p2_up, p2_down, delta_time_seconds);
                 }
                 p2_height = p.position;
+                p2_score = p.score;
             },
             _ => {panic!("p2 was dropped!")}
         };
@@ -219,6 +226,7 @@ fn main() {
         }
 
         unsafe {
+            set_title(CString::new(format!("{p1_score}  :  {p2_score}").as_str()).unwrap().as_bytes_with_nul().as_ptr());
             draw(ball.x, ball.y, p1_height, p2_height);
             update_SDL();
             if game_over {
