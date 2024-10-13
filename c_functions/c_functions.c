@@ -29,8 +29,8 @@ void draw(float ball_x, float ball_y, float p1_height, float p2_height)
     SDL_Rect b = {
         .h = _ball_size,
         .w = _ball_size,
-        .x = (int)ball_x + (int)((_width - _ball_size)*0.5),
-        .y = (int)ball_y + (int)((_height - _ball_size)*0.5)
+        .x = (int)ball_x - (int)(_ball_size*0.5),
+        .y = (int)ball_y - (int)(_ball_size*0.5)
     };
 
     SDL_RenderFillRect(renderer, &b);
